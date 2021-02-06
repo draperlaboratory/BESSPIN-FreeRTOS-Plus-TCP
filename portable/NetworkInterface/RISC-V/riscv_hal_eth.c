@@ -341,7 +341,13 @@ void prvEMACDeferredInterruptHandlerTask( void *pvParameters ) {
             into this buffer. */
             pxBufferDescriptor = pxGetNetworkBufferWithDescriptor( xBytesReceived, 0 );
 
-			configASSERT( pxBufferDescriptor != NULL);
+			/* If the descriptor is NULL, record the event, and continue.
+			We hope that evenutally some decriptor will be available, and dropping a sigle
+			frame is OK */
+			if (pxBufferDescriptor == NULL) {
+				iptraceETHERNET_RX_EVENT_LOST();
+				continue;
+			}
 
 			// Buf address
 #if defined(__clang__)
