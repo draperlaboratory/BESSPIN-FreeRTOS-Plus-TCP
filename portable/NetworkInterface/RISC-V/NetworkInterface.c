@@ -71,7 +71,6 @@ BaseType_t xNetworkInterfaceInitialise( void )
 	XAxiEthernet_Start(&AxiEthernetInstance);
 	XAxiEthernet_IntEnable(&AxiEthernetInstance, XAE_INT_RECV_ERROR_MASK);
 
-	vTaskDelay(pdMS_TO_TICKS(AXIETHERNET_PHY_DELAY_SEC*1000));
 	return pdPASS;
 }
 /*-----------------------------------------------------------*/
