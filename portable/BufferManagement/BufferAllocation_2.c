@@ -273,8 +273,10 @@ NetworkBufferDescriptor_t * pxGetNetworkBufferWithDescriptor( size_t xRequestedS
                      * buffer storage area, then move the buffer pointer on past the
                      * stored pointer so the pointer value is not overwritten by the
                      * application when the buffer is used. */
+                    #pragma GCC diagnostic push
                     #pragma GCC diagnostic ignored "-Wcast-align"
                     *( ( NetworkBufferDescriptor_t ** ) ( pxReturn->pucEthernetBuffer ) ) = pxReturn;
+                    #pragma GCC diagnostic pop
                     pxReturn->pucEthernetBuffer += ipBUFFER_PADDING;
 
                     /* Store the actual size of the allocated buffer, which may be

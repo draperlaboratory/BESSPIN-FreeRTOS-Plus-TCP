@@ -2534,6 +2534,13 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
          * of this calculation. */
         pxProtPack = ipCAST_CONST_PTR_TO_CONST_TYPE_PTR( ProtocolPacket_t, &( pucEthernetBuffer[ uxIPHeaderLength - ipSIZE_OF_IPv4_HEADER ] ) );
 
+        #if defined(__clang__)
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Waddress-of-packed-member"
+        #else
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+        #endif
         /* Switch on the Layer 3/4 protocol. */
         if( ucProtocol == ( uint8_t ) ipPROTOCOL_UDP )
         {
@@ -2543,13 +2550,7 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
                 DEBUG_SET_TRACE_VARIABLE( xLocation, 4 );
                 break;
             }
-            #if defined(__clang__)
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Waddress-of-packed-member"
-            #else
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Waddress-of-packed-member"
-            #endif
+
             pusChecksum = ( uint16_t * ) ( &( pxProtPack->xUDPPacket.xUDPHeader.usChecksum ) );
             #if ( ipconfigHAS_DEBUG_PRINTF != 0 )
                 {
@@ -2565,13 +2566,7 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
                 DEBUG_SET_TRACE_VARIABLE( xLocation, 5 );
                 break;
             }
-            #if defined(__clang__)
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Waddress-of-packed-member"
-            #else
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Waddress-of-packed-member"
-            #endif
+
             pusChecksum = ( uint16_t * ) ( &( pxProtPack->xTCPPacket.xTCPHeader.usChecksum ) );
             #if ( ipconfigHAS_DEBUG_PRINTF != 0 )
                 {
@@ -2588,13 +2583,7 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
                 DEBUG_SET_TRACE_VARIABLE( xLocation, 6 );
                 break;
             }
-            #if defined(__clang__)
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Waddress-of-packed-member"
-            #else
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Waddress-of-packed-member"
-            #endif
+
             pusChecksum = ( uint16_t * ) ( &( pxProtPack->xICMPPacket.xICMPHeader.usChecksum ) );
             #if ( ipconfigHAS_DEBUG_PRINTF != 0 )
                 {
@@ -2616,6 +2605,11 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
             DEBUG_SET_TRACE_VARIABLE( xLocation, 7 );
             break;
         }
+        #if defined(__clang__)
+            #pragma clang diagnostic pop
+        #else
+            #pragma GCC diagnostic pop
+        #endif
 
         /* The protocol and checksum field have been identified. Check the direction
          * of the packet. */
