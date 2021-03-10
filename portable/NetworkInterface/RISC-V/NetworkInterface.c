@@ -42,6 +42,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /* FreeRTOS+TCP includes. */
 #include "NetworkInterface.h"
 
+#if BSP_USE_ICENET==0
+
 /* Board specific includes */
 #include "riscv_hal_eth.h"
 
@@ -150,3 +152,79 @@ BaseType_t xGetPhyLinkStatus( void )
 	}
 }
 /*-----------------------------------------------------------*/
+
+#else // BSP_USE_ICENET
+
+/* Board specific includes */
+#include "icenet.h"
+#include "riscv_icenet_eth.h"
+
+BaseType_t xNetworkInterfaceInitialise( void )
+{
+	FreeRTOS_debug_printf( ("xNetworkInterfaceInitialise\r\n") );
+
+	// Init Ethernet
+	configASSERT(NICSetup(&IceNetEthernetInstance) == 0);
+
+	// Connect to PLIC
+	configASSERT(IceNetEthernetSetupIntrSystem(&Plic, &IceNetEthernetInstance, PLIC_SOURCE_ICEETH_RX) == 0);
+	return pdPASS;
+}
+/*-----------------------------------------------------------*/
+
+BaseType_t xNetworkInterfaceDestroy( void )
+{
+	FreeRTOS_debug_printf( ("xNetworkInterfaceDestroy\r\n") );
+	icenet_clear_intmask(&IceNetEthernetInstance, ICENET_INTMASK_BOTH);
+	IceNetEthernetDisableIntrSystem(&Plic, PLIC_SOURCE_ICEETH_RX);
+	return pdPASS;
+}
+/*-----------------------------------------------------------*/
+
+BaseType_t xNetworkInterfaceOutput( NetworkBufferDescriptor_t * const pxNetworkBuffer, BaseType_t xReleaseAfterSend )
+{
+	FreeRTOS_debug_printf( ("xNetworkInterfaceOutput\r\n") );
+
+	/* get next available Tx buffer */
+	IceEthernetFrame *FramePtr;
+	char *FramePtrIncr;
+	uint8_t retries = ICENET_TX_RETRIES;
+	taskENTER_CRITICAL();
+	while (icenet_get_tx_buffer(&IceNetEthernetInstance, &FramePtr) == 0) {
+		taskEXIT_CRITICAL();
+		if (retries == 0) { return pdFAIL; }
+		FreeRTOS_debug_printf( ("xNetworkInterfaceOutput: No TX Buffers available... Retrying after clearing completed TXNs\r\n") );
+		if (retries != ICENET_TX_RETRIES) {
+			vTaskDelay(pdMS_TO_TICKS(ICENET_TX_RETRY_DELAY_MS));
+		}
+		taskENTER_CRITICAL();
+		icenet_complete_send(&IceNetEthernetInstance);
+		retries = retries - 1;
+	}
+	FramePtrIncr = (char *) FramePtr + 2;
+
+	/* configure Frame */
+	memcpy(FramePtrIncr, pxNetworkBuffer->pucEthernetBuffer, pxNetworkBuffer->xDataLength);
+
+	/* pass Frame to HW */
+	configASSERT( icenet_start_xmit(&IceNetEthernetInstance, FramePtr, pxNetworkBuffer->xDataLength + 2) == 0 );
+	taskEXIT_CRITICAL();
+
+	/* Call the standard trace macro to log the send event. */
+    iptraceNETWORK_INTERFACE_TRANSMIT();
+
+	// simple driver
+	if( xReleaseAfterSend != pdFALSE )
+    {
+        /* It is assumed SendData() copies the data out of the FreeRTOS+TCP Ethernet
+        buffer.  The Ethernet buffer is therefore no longer needed, and must be
+        freed for re-use. */
+		// printf("Done the release\n");
+        vReleaseNetworkBufferAndDescriptor( pxNetworkBuffer );
+    }
+
+	return pdPASS;
+}
+
+#endif // BSP_USE_ICENET
+
