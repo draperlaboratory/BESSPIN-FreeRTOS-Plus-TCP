@@ -979,16 +979,16 @@ void FreeRTOS_ClearARP( void )
             if( ( xARPCache[ x ].ulIPAddress != 0UL ) && ( xARPCache[ x ].ucAge > ( uint8_t ) 0U ) )
             {
                 /* See if the MAC-address also matches, and we're all happy */
-                FreeRTOS_printf( ( "Arp %2ld: %3u - %16lxip : %02x:%02x:%02x : %02x:%02x:%02x\n",
-                                   x,
-                                   xARPCache[ x ].ucAge,
-                                   xARPCache[ x ].ulIPAddress,
-                                   xARPCache[ x ].xMACAddress.ucBytes[ 0 ],
-                                   xARPCache[ x ].xMACAddress.ucBytes[ 1 ],
-                                   xARPCache[ x ].xMACAddress.ucBytes[ 2 ],
-                                   xARPCache[ x ].xMACAddress.ucBytes[ 3 ],
-                                   xARPCache[ x ].xMACAddress.ucBytes[ 4 ],
-                                   xARPCache[ x ].xMACAddress.ucBytes[ 5 ] ) );
+                FreeRTOS_printf( ( "Arp %2d: %3u - %16xip : %02x:%02x:%02x : %02x:%02x:%02x\n",
+                                   (unsigned int)x,
+                                   (unsigned int)xARPCache[ x ].ucAge,
+                                   (unsigned int)xARPCache[ x ].ulIPAddress,
+                                   (unsigned int)xARPCache[ x ].xMACAddress.ucBytes[ 0 ],
+                                   (unsigned int)xARPCache[ x ].xMACAddress.ucBytes[ 1 ],
+                                   (unsigned int)xARPCache[ x ].xMACAddress.ucBytes[ 2 ],
+                                   (unsigned int)xARPCache[ x ].xMACAddress.ucBytes[ 3 ],
+                                   (unsigned int)xARPCache[ x ].xMACAddress.ucBytes[ 4 ],
+                                   (unsigned int)xARPCache[ x ].xMACAddress.ucBytes[ 5 ] ) );
                 xCount++;
             }
         }
