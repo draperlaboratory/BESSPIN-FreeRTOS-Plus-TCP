@@ -2638,7 +2638,7 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
 
                             if( xCount < 5 )
                             {
-                                FreeRTOS_printf( ( "usGenerateProtocolChecksum: UDP packet from %xip without CRC dropped\n",
+                                FreeRTOS_printf( ( "usGenerateProtocolChecksum: UDP packet from %lxip without CRC dropped\n",
                                                    FreeRTOS_ntohl( pxIPPacket->xIPHeader.ulSourceIPAddress ) ) );
                                 xCount++;
                             }
@@ -3095,7 +3095,9 @@ void vReturnEthernetFrame( NetworkBufferDescriptor_t * pxNetworkBuffer,
         else if( ( uxMinLastSize * ipMONITOR_PERCENTAGE_90 ) > ( uxMinSize * ipMONITOR_PERCENTAGE_100 ) )
         {
             uxMinLastSize = uxMinSize;
-            FreeRTOS_printf( ( "Heap: current %lu lowest %lu\n", xPortGetFreeHeapSize(), uxMinSize ) );
+            FreeRTOS_printf( ( "Heap: current %lu lowest %lu\n", 
+                (long unsigned int) xPortGetFreeHeapSize(), 
+                (long unsigned int) uxMinSize ) );
         }
         else
         {
@@ -3410,7 +3412,7 @@ const char * FreeRTOS_strerror_r( BaseType_t xErrnum,
 
         default:
             /* Using function "snprintf". */
-            ( void ) snprintf( pcBuffer, uxLength, "Errno %d", ( int32_t ) xErrnum );
+            ( void ) snprintf( pcBuffer, uxLength, "Errno %ld", ( long int ) xErrnum );
             pcName = NULL;
             break;
     }
