@@ -32,6 +32,7 @@
 
 /* INTERNAL API FUNCTIONS. */
     BaseType_t xNetworkInterfaceInitialise( void );
+    BaseType_t xNetworkInterfaceDestroy( void );
     BaseType_t xNetworkInterfaceOutput( NetworkBufferDescriptor_t * const pxNetworkBuffer,
                                         BaseType_t xReleaseAfterSend );
 
