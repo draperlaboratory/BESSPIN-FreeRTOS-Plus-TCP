@@ -2633,7 +2633,7 @@ uint16_t usGenerateProtocolChecksum( const uint8_t * const pucEthernetBuffer,
                             if( xCount < 5 )
                             {
                                 FreeRTOS_printf( ( "usGenerateProtocolChecksum: UDP packet from %lxip without CRC dropped\n",
-                                                   FreeRTOS_ntohl( pxIPPacket->xIPHeader.ulSourceIPAddress ) ) );
+                                                   (long unsigned int) FreeRTOS_ntohl( pxIPPacket->xIPHeader.ulSourceIPAddress ) ) );
                                 xCount++;
                             }
                         }
