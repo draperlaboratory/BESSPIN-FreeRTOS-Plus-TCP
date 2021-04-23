@@ -180,7 +180,7 @@ static void prvTxRxHandlerTask( void * pvParameter )
 }
 /*-----------------------------------------------------------*/
 
-static int prvNetworkInterfaceInterruptHandler( void * CallBackRef )
+static void prvNetworkInterfaceInterruptHandler( void * CallBackRef )
 {
     BaseType_t pxHigherPriorityTaskWoken = 0;
     struct virtio_net * vnet = ( struct virtio_net * ) CallBackRef;
@@ -188,20 +188,20 @@ static int prvNetworkInterfaceInterruptHandler( void * CallBackRef )
     if( !vnet || !vnet->driver.running )
     {
         FreeRTOS_debug_printf( ( "Eth driver isn't functional yet\n" ) );
-        return 0;
+  //      return 0;
     }
 
     virtionet_handle_interrupt( vnet );
 
-    if( EthTaskHandler == NULL )
-    {
-        return pxHigherPriorityTaskWoken;
-    }
+    // if( EthTaskHandler == NULL )
+    // {
+    //     return pxHigherPriorityTaskWoken;
+    // }
 
     /* Uncomment if/when the driver is interrupt-based */
     vTaskNotifyGiveFromISR( EthTaskHandler, &pxHigherPriorityTaskWoken );
 
-    return pxHigherPriorityTaskWoken;
+//    return pxHigherPriorityTaskWoken;
 }
 /*-----------------------------------------------------------*/
 
