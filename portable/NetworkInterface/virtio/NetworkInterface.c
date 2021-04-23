@@ -263,7 +263,7 @@ BaseType_t xNetworkInterfaceInitialise( void )
 }
 /*-----------------------------------------------------------*/
 
-static BaseType_t xNetworkInterfaceDestroy( void )
+BaseType_t xNetworkInterfaceDestroy( void )
 {
     FreeRTOS_debug_printf( ( "xNetworkInterfaceDestroy\r\n" ) );
 
