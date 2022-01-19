@@ -703,8 +703,8 @@
                     else
                     {
                         FreeRTOS_printf( ( "prvPrepareLookup: name is too long ( %lu > %lu )\n",
-                                           ( uint32_t ) xLength,
-                                           ( uint32_t ) ipconfigDNS_CACHE_NAME_LENGTH ) );
+                                           ( uintptr_t ) xLength,
+                                           ( uintptr_t ) ipconfigDNS_CACHE_NAME_LENGTH ) );
                     }
                 }
             }
