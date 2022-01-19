@@ -107,9 +107,10 @@ static TaskHandle_t prvEMACDeferredInterruptHandlerTaskHandle = NULL;
  * Define an aligned data type for an ethernet frame. This declaration is
  * specific to the GNU compiler
  */
+extern uint8_t __uncached_start;
 typedef uint8_t EthernetFrame[NUM_PACKETS * XAE_MAX_JUMBO_FRAME_SIZE] __attribute__ ((aligned(BD_ALIGNMENT)));
 // 0x80000000
-static uint8_t * const TxFrameBufRef = (uint8_t *)0x80000000;
+static uint8_t * const TxFrameBufRef = (uint8_t *)&__uncached_start;
 //static EthernetFrame TxFrameBuf[TXBD_CNT] __attribute__ ((section(".uncached")));	/* Transmit buffers */
 // 0x80015fc0
 static uint8_t * const RxFrameBufRef =(uint8_t *)(TxFrameBufRef + TXBD_CNT * sizeof(EthernetFrame));
